@@ -1,5 +1,10 @@
 <?php
 
+if (isset($_GET['setup_db'])) {
+    require_once __DIR__ . '/../import_data.php';
+    exit;
+}
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
