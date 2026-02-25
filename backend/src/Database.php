@@ -6,20 +6,23 @@ use PDO;
 use PDOException;
 
 class Database {
-    private $host = '127.0.0.1';
-    private $db_name = 'scandiweb_db';
-    private $username = 'root';
-    private $password = '';
     public $conn;
 
     public function connect() {
         $this->conn = null;
 
+        // გარემოს ცვლადების წაკითხვა Railway-სთვის, ან ლოკალური მონაცემების გამოყენება
+        $host = getenv('MYSQLHOST') ?: '127.0.0.1';
+        $db_name = getenv('MYSQLDATABASE') ?: 'scandiweb_db';
+        $username = getenv('MYSQLUSER') ?: 'root';
+        $password = getenv('MYSQLPASSWORD') ?: '';
+        $port = getenv('MYSQLPORT') ?: '3306';
+
         try {
             $this->conn = new PDO(
-                "mysql:host=" . $this->host . ";dbname=" . $this->db_name,
-                $this->username,
-                $this->password
+                "mysql:host=" . $host . ";port=" . $port . ";dbname=" . $db_name,
+                $username,
+                $password
             );
             
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

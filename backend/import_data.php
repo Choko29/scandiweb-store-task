@@ -1,13 +1,14 @@
 <?php
 
-
-$host = '127.0.0.1';
-$db   = 'scandiweb_db';
-$user = 'root';
-$pass = '';
+// Railway-ს გარემოს ცვლადები ბაზასთან დასაკავშირებლად
+$host = getenv('MYSQLHOST') ?: '127.0.0.1';
+$db   = getenv('MYSQLDATABASE') ?: 'scandiweb_db';
+$user = getenv('MYSQLUSER') ?: 'root';
+$pass = getenv('MYSQLPASSWORD') ?: '';
+$port = getenv('MYSQLPORT') ?: '3306';
 $charset = 'utf8mb4';
 
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$dsn = "mysql:host=$host;port=$port;dbname=$db;charset=$charset";
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -76,7 +77,6 @@ $pdo->exec($sql);
 echo "Tables successfully created!\n";
 
 
-
 $jsonFile = __DIR__ . '/../data.json';
 if (!file_exists($jsonFile)) {
     die("Error: data.json file not found. Make sure it is in the root directory.\n");
@@ -88,8 +88,6 @@ $data = json_decode($jsonData, true);
 if (!$data) {
     die("Error: Failed to parse JSON file.\n");
 }
-
-
 
 
 $stmtCategory = $pdo->prepare("INSERT IGNORE INTO categories (name) VALUES (?)");
