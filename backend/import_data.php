@@ -76,8 +76,8 @@ $sql = "
 $pdo->exec($sql);
 echo "Tables successfully created!\n";
 
-
-$jsonFile = __DIR__ . '/../data.json';
+// შეცვლილია ეს ხაზი, რომ დაინახოს თავის ფოლდერში ჩაგდებული data.json
+$jsonFile = __DIR__ . '/data.json';
 if (!file_exists($jsonFile)) {
     die("Error: data.json file not found. Make sure it is in the root directory.\n");
 }
