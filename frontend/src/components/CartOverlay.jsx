@@ -18,7 +18,7 @@ function CartOverlay({ onClose }) {
     <>
       <div className="cart-overlay-backdrop" onClick={onClose}></div>
       
-      <div className="cart-overlay">
+      <div className="cart-overlay" data-testid="cart-overlay">
         <h3 className="cart-overlay-title">
           <strong>My Bag</strong>, {itemsText}
         </h3>

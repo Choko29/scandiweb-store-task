@@ -1,6 +1,6 @@
-import { useState, useContext } from 'react';
+import { useContext } from 'react';
 import { useQuery, gql } from '@apollo/client';
-import { BrowserRouter as Router, Routes, Route, useNavigate, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Link, useLocation, useParams, Navigate } from 'react-router-dom';
 import ProductDetails from './pages/ProductDetails';
 import CartOverlay from './components/CartOverlay';
 import { CartContext } from './context/CartContext';
@@ -117,30 +117,38 @@ function ProductList({ currentCategory }) {
   );
 }
 
-function Navigation({ currentCategory, setCurrentCategory }) {
+// ახალი კომპონენტი რომელიც URL-დან იღებს კატეგორიას
+function CategoryPage() {
+  const { category } = useParams();
+  const currentCategory = category || 'all';
+  return <ProductList currentCategory={currentCategory} />;
+}
+
+function Navigation() {
+  const location = useLocation();
+  const path = location.pathname.substring(1); 
+  const currentCategory = path || 'all';
+
   return (
     <nav className="nav-categories">
       <Link 
-        to="/" 
+        to="/all" 
         className={currentCategory === 'all' ? 'active' : ''} 
         data-testid={currentCategory === 'all' ? 'active-category-link' : 'category-link'} 
-        onClick={() => setCurrentCategory('all')}
       >
         ALL
       </Link>
       <Link 
-        to="/" 
+        to="/tech" 
         className={currentCategory === 'tech' ? 'active' : ''} 
         data-testid={currentCategory === 'tech' ? 'active-category-link' : 'category-link'} 
-        onClick={() => setCurrentCategory('tech')}
       >
         TECH
       </Link>
       <Link 
-        to="/" 
+        to="/clothes" 
         className={currentCategory === 'clothes' ? 'active' : ''} 
         data-testid={currentCategory === 'clothes' ? 'active-category-link' : 'category-link'} 
-        onClick={() => setCurrentCategory('clothes')}
       >
         CLOTHES
       </Link>
@@ -149,7 +157,6 @@ function Navigation({ currentCategory, setCurrentCategory }) {
 }
 
 function App() {
-  const [currentCategory, setCurrentCategory] = useState('all');
   const { cartItems, isCartOpen, setIsCartOpen } = useContext(CartContext);
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -157,10 +164,10 @@ function App() {
     <Router>
       <div className="app-container">
         <header className="header">
-          <Navigation currentCategory={currentCategory} setCurrentCategory={setCurrentCategory} />
+          <Navigation />
           
           <div className="logo">
-            <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setCurrentCategory('all')}>🛍️ SCANDISTORE</Link>
+            <Link to="/all" style={{ textDecoration: 'none', color: 'inherit' }}>🛍️ SCANDISTORE</Link>
           </div>
 
           <div className="header-actions">
@@ -181,7 +188,8 @@ function App() {
         </header>
 
         <Routes>
-          <Route path="/" element={<ProductList currentCategory={currentCategory} />} />
+          <Route path="/" element={<Navigate to="/all" replace />} />
+          <Route path="/:category" element={<CategoryPage />} />
           <Route path="/product/:id" element={<ProductDetails />} />
         </Routes>
       </div>
