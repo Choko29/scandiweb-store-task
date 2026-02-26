@@ -1,6 +1,6 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext } from 'react';
 import { useQuery, gql } from '@apollo/client';
-import { BrowserRouter as Router, Routes, Route, useNavigate, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Link } from 'react-router-dom';
 import ProductDetails from './pages/ProductDetails';
 import CartOverlay from './components/CartOverlay';
 import { CartContext } from './context/CartContext';
@@ -41,7 +41,23 @@ function ProductList({ currentCategory }) {
   const navigate = useNavigate();
   const { addToCart } = useContext(CartContext);
 
-  if (loading) return <div className="loader">Loading products... ⏳</div>;
+  if (loading) {
+    return (
+      <main>
+        <h1 className="category-title">{currentCategory === 'all' ? 'All' : currentCategory} Products</h1>
+        <div className="products-grid">
+          {[1, 2, 3, 4, 5, 6].map((n) => (
+            <div key={n} className="product-card skeleton-card">
+              <div className="skeleton skeleton-img"></div>
+              <div className="skeleton skeleton-text"></div>
+              <div className="skeleton skeleton-text short"></div>
+            </div>
+          ))}
+        </div>
+      </main>
+    );
+  }
+
   if (error) return <div className="error">Error: {error.message} ❌</div>;
 
   const filteredProducts = currentCategory === 'all' 
@@ -102,14 +118,6 @@ function ProductList({ currentCategory }) {
 }
 
 function Navigation({ currentCategory, setCurrentCategory }) {
-  const location = useLocation();
-
-  useEffect(() => {
-    if (location.pathname === '/') {
-      setCurrentCategory('all');
-    }
-  }, [location, setCurrentCategory]);
-
   return (
     <nav className="nav-categories">
       <Link 
@@ -152,7 +160,7 @@ function App() {
           <Navigation currentCategory={currentCategory} setCurrentCategory={setCurrentCategory} />
           
           <div className="logo">
-            <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>🛍️ SCANDI STORE</Link>
+            <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setCurrentCategory('all')}>🛍️ SCANDI STORE</Link>
           </div>
 
           <div className="header-actions">

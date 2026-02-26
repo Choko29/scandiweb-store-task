@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Raleway', sans-serif;
   background-color: #ffffff;
   color: #1d1f22;
 }
@@ -11,7 +11,6 @@ body {
   padding: 0 2rem 5rem 2rem;
   background-color: white;
 }
-
 
 .header {
   height: 80px;
@@ -84,8 +83,6 @@ body {
   justify-content: center;
 }
 
-
-
 .category-title {
   font-weight: 400;
   font-size: 42px;
@@ -102,13 +99,14 @@ body {
 .product-card {
   padding: 16px;
   background: #fff;
-  transition: box-shadow 0.3s ease;
+  transition: all 0.3s ease-in-out;
   cursor: pointer;
   position: relative; 
 }
 
 .product-card:hover {
   box-shadow: 0px 4px 35px rgba(168, 172, 176, 0.19);
+  transform: translateY(-5px);
 }
 
 .image-container {
@@ -176,6 +174,7 @@ body {
 
 .product-card.out-of-stock:hover {
   box-shadow: none; 
+  transform: none;
 }
 
 .out-of-stock-overlay {
@@ -556,4 +555,108 @@ body {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+}
+
+@keyframes pulse-bg {
+  0% { background-color: #f6f6f6; }
+  50% { background-color: #e0e0e0; }
+  100% { background-color: #f6f6f6; }
+}
+
+.skeleton {
+  animation: pulse-bg 1.5s infinite ease-in-out;
+  border-radius: 4px;
+}
+
+.skeleton-card {
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: #fff;
+}
+
+.skeleton-img {
+  width: 100%;
+  height: 330px;
+}
+
+.skeleton-text {
+  height: 20px;
+  width: 80%;
+}
+
+.skeleton-text.short {
+  width: 40%;
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 0 1rem 3rem 1rem;
+  }
+
+  .header {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 20px 0;
+  }
+
+  .logo {
+    position: relative;
+    left: 0;
+    transform: none;
+    order: 1;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .nav-categories {
+    order: 2;
+    width: 80%;
+    justify-content: flex-start;
+  }
+
+  .header-actions {
+    position: absolute;
+    top: 20px;
+    right: 10px;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+    gap: 20px;
+  }
+
+  .pdp-container {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .pdp-gallery-section {
+    flex-direction: column-reverse;
+  }
+
+  .pdp-thumbnails {
+    flex-direction: row;
+    overflow-x: auto;
+    max-height: max-content;
+  }
+
+  .pdp-main-image {
+    max-height: 400px;
+  }
+
+  .pdp-add-to-cart {
+    width: 100%;
+  }
+
+  .cart-overlay {
+    top: 130px;
+    right: 50%;
+    transform: translateX(50%);
+    width: 90%;
+    max-width: 350px;
+  }
 }

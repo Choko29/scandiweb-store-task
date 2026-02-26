@@ -12,7 +12,6 @@ function CartOverlay({ onClose }) {
   const totalPrice = cartItems.reduce((sum, item) => sum + (item.product.prices[0].amount * item.quantity), 0);
   const currencySymbol = cartItems.length > 0 ? cartItems[0].product.prices[0].currency_symbol : '$';
   
-  
   const itemsText = totalItems === 1 ? '1 Item' : `${totalItems} Items`;
 
   return (
@@ -40,10 +39,10 @@ function CartOverlay({ onClose }) {
                           const isSelected = item.selectedAttributes && item.selectedAttributes[attr.name] === attrItem.id;
                           const isColor = attr.type === 'swatch';
                           
-                          
+                          // Scandiweb Test ID requirements for attributes inside the cart
                           const testId = isSelected 
-                            ? `cart-item-attribute-${toKebabCase(attr.name)}-${toKebabCase(attrItem.value)}-selected`
-                            : `cart-item-attribute-${toKebabCase(attr.name)}-${toKebabCase(attrItem.value)}`;
+                            ? `cart-item-attribute-${toKebabCase(attr.name)}-${toKebabCase(attrItem.id)}-selected`
+                            : `cart-item-attribute-${toKebabCase(attr.name)}-${toKebabCase(attrItem.id)}`;
 
                           return (
                             <div 
@@ -85,6 +84,7 @@ function CartOverlay({ onClose }) {
           style={{ opacity: cartItems.length === 0 ? 0.5 : 1, cursor: cartItems.length === 0 ? 'not-allowed' : 'pointer' }}
           onClick={() => {
             if(cartItems.length > 0) {
+              
               setCartItems([]);
               onClose();
             }
