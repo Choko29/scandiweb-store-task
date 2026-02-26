@@ -11,7 +11,7 @@ class Database {
     public function connect() {
         $this->conn = null;
 
-        // გარემოს ცვლადების წაკითხვა Railway-სთვის, ან ლოკალური მონაცემების გამოყენება
+        
         $host = getenv('MYSQLHOST') ?: '127.0.0.1';
         $db_name = getenv('MYSQLDATABASE') ?: 'scandiweb_db';
         $username = getenv('MYSQLUSER') ?: 'root';

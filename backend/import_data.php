@@ -1,6 +1,5 @@
 <?php
 
-// Railway-ს გარემოს ცვლადები ბაზასთან დასაკავშირებლად
 $host = getenv('MYSQLHOST') ?: '127.0.0.1';
 $db   = getenv('MYSQLDATABASE') ?: 'scandiweb_db';
 $user = getenv('MYSQLUSER') ?: 'root';
@@ -17,84 +16,47 @@ $options = [
 
 try {
     $pdo = new PDO($dsn, $user, $pass, $options);
-    echo "Successfully connected to the database!\n";
+    echo "Successfully connected to the database!<br>\n";
 } catch (\PDOException $e) {
     throw new \PDOException($e->getMessage(), (int)$e->getCode());
 }
 
+// 1. ვქმნით ცხრილებს სათითაოდ (რომ ერორი არ ამოაგდოს)
+$pdo->exec("CREATE TABLE IF NOT EXISTS categories (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL UNIQUE)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS products (id VARCHAR(255) PRIMARY KEY, name VARCHAR(255) NOT NULL, inStock BOOLEAN NOT NULL, description TEXT, category_name VARCHAR(255), brand VARCHAR(255), FOREIGN KEY (category_name) REFERENCES categories(name) ON DELETE CASCADE)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS gallery (id INT AUTO_INCREMENT PRIMARY KEY, product_id VARCHAR(255), image_url TEXT NOT NULL, FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS prices (id INT AUTO_INCREMENT PRIMARY KEY, product_id VARCHAR(255), amount DECIMAL(10, 2) NOT NULL, currency_label VARCHAR(10) NOT NULL, currency_symbol VARCHAR(10) NOT NULL, FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS attribute_sets (id INT AUTO_INCREMENT PRIMARY KEY, product_id VARCHAR(255), name VARCHAR(255) NOT NULL, type VARCHAR(50) NOT NULL, FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS attribute_items (id INT AUTO_INCREMENT PRIMARY KEY, attribute_set_id INT, display_value VARCHAR(255) NOT NULL, value VARCHAR(255) NOT NULL, item_id VARCHAR(255) NOT NULL, FOREIGN KEY (attribute_set_id) REFERENCES attribute_sets(id) ON DELETE CASCADE)");
 
-$sql = "
-    CREATE TABLE IF NOT EXISTS categories (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL UNIQUE
-    );
+// 2. ვასუფთავებთ ძველ მონაცემებს აბსოლუტურად! (TRUNCATE შლის ყველაფერს)
+$pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
+$pdo->exec("TRUNCATE TABLE attribute_items");
+$pdo->exec("TRUNCATE TABLE attribute_sets");
+$pdo->exec("TRUNCATE TABLE prices");
+$pdo->exec("TRUNCATE TABLE gallery");
+$pdo->exec("TRUNCATE TABLE products");
+$pdo->exec("TRUNCATE TABLE categories");
+$pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
-    CREATE TABLE IF NOT EXISTS products (
-        id VARCHAR(255) PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        inStock BOOLEAN NOT NULL,
-        description TEXT,
-        category_name VARCHAR(255),
-        brand VARCHAR(255),
-        FOREIGN KEY (category_name) REFERENCES categories(name) ON DELETE CASCADE
-    );
+echo "Clean tables successfully prepared!<br>\n";
 
-    CREATE TABLE IF NOT EXISTS gallery (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        product_id VARCHAR(255),
-        image_url TEXT NOT NULL,
-        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS prices (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        product_id VARCHAR(255),
-        amount DECIMAL(10, 2) NOT NULL,
-        currency_label VARCHAR(10) NOT NULL,
-        currency_symbol VARCHAR(10) NOT NULL,
-        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS attribute_sets (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        product_id VARCHAR(255),
-        name VARCHAR(255) NOT NULL,
-        type VARCHAR(50) NOT NULL,
-        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS attribute_items (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        attribute_set_id INT,
-        display_value VARCHAR(255) NOT NULL,
-        value VARCHAR(255) NOT NULL,
-        item_id VARCHAR(255) NOT NULL,
-        FOREIGN KEY (attribute_set_id) REFERENCES attribute_sets(id) ON DELETE CASCADE
-    );
-";
-
-$pdo->exec($sql);
-echo "Tables successfully created!\n";
-
-// შეცვლილია ეს ხაზი, რომ დაინახოს თავის ფოლდერში ჩაგდებული data.json
 $jsonFile = __DIR__ . '/data.json';
 if (!file_exists($jsonFile)) {
-    die("Error: data.json file not found. Make sure it is in the root directory.\n");
+    die("Error: data.json file not found. Make sure it is in the root directory.<br>\n");
 }
 
 $jsonData = file_get_contents($jsonFile);
 $data = json_decode($jsonData, true);
 
 if (!$data) {
-    die("Error: Failed to parse JSON file.\n");
+    die("Error: Failed to parse JSON file.<br>\n");
 }
-
 
 $stmtCategory = $pdo->prepare("INSERT IGNORE INTO categories (name) VALUES (?)");
 foreach ($data['data']['categories'] as $category) {
     $stmtCategory->execute([$category['name']]);
 }
-
 
 $stmtProduct = $pdo->prepare("INSERT INTO products (id, name, inStock, description, category_name, brand) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name)");
 $stmtGallery = $pdo->prepare("INSERT INTO gallery (product_id, image_url) VALUES (?, ?)");
@@ -103,7 +65,6 @@ $stmtAttrSet = $pdo->prepare("INSERT INTO attribute_sets (product_id, name, type
 $stmtAttrItem = $pdo->prepare("INSERT INTO attribute_items (attribute_set_id, display_value, value, item_id) VALUES (?, ?, ?, ?)");
 
 foreach ($data['data']['products'] as $product) {
-    
     $inStock = $product['inStock'] ? 1 : 0;
     $stmtProduct->execute([
         $product['id'], 
@@ -114,14 +75,12 @@ foreach ($data['data']['products'] as $product) {
         $product['brand']
     ]);
 
-    
     if (isset($product['gallery'])) {
         foreach ($product['gallery'] as $image) {
             $stmtGallery->execute([$product['id'], $image]);
         }
     }
 
-    
     if (isset($product['prices'])) {
         foreach ($product['prices'] as $price) {
             $stmtPrice->execute([
@@ -133,7 +92,6 @@ foreach ($data['data']['products'] as $product) {
         }
     }
 
-    
     if (isset($product['attributes'])) {
         foreach ($product['attributes'] as $attribute) {
             $stmtAttrSet->execute([$product['id'], $attribute['name'], $attribute['type']]);
@@ -151,5 +109,5 @@ foreach ($data['data']['products'] as $product) {
     }
 }
 
-echo "Success! Data has been successfully loaded into the database!\n";
+echo "Success! 100% Clean data has been successfully loaded into the database!<br>\n";
 ?>
