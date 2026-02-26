@@ -1,8 +1,9 @@
 import { useContext } from 'react';
 import { CartContext } from '../context/CartContext';
 
+
 const toKebabCase = (str) => {
-  return str.replace(/([a-z])([A-Z])/g, "$1-$2").replace(/[\s_]+/g, '-').toLowerCase();
+  return str.replace(/\s+/g, '-').toLowerCase();
 };
 
 function CartOverlay({ onClose }) {
@@ -39,7 +40,7 @@ function CartOverlay({ onClose }) {
                           const isSelected = item.selectedAttributes && item.selectedAttributes[attr.name] === attrItem.id;
                           const isColor = attr.type === 'swatch';
                           
-                          // Scandiweb Test ID requirements for attributes inside the cart
+                          
                           const testId = isSelected 
                             ? `cart-item-attribute-${toKebabCase(attr.name)}-${toKebabCase(attrItem.id)}-selected`
                             : `cart-item-attribute-${toKebabCase(attr.name)}-${toKebabCase(attrItem.id)}`;

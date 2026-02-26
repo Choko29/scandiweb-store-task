@@ -32,8 +32,9 @@ const GET_PRODUCT = gql`
   }
 `;
 
+
 const toKebabCase = (str) => {
-  return str.replace(/([a-z])([A-Z])/g, "$1-$2").replace(/[\s_]+/g, '-').toLowerCase();
+  return str.replace(/\s+/g, '-').toLowerCase();
 };
 
 function ProductDetails() {

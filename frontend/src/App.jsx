@@ -32,8 +32,9 @@ const GET_PRODUCTS = gql`
   }
 `;
 
+// გამარტივებული Kebab Case ფუნქცია
 const toKebabCase = (str) => {
-  return str.replace(/([a-z])([A-Z])/g, "$1-$2").replace(/[\s_]+/g, '-').toLowerCase();
+  return str.replace(/\s+/g, '-').toLowerCase();
 };
 
 function ProductList({ currentCategory }) {
@@ -117,7 +118,6 @@ function ProductList({ currentCategory }) {
   );
 }
 
-// ახალი კომპონენტი რომელიც URL-დან იღებს კატეგორიას
 function CategoryPage() {
   const { category } = useParams();
   const currentCategory = category || 'all';
@@ -167,7 +167,8 @@ function App() {
           <Navigation />
           
           <div className="logo">
-            <Link to="/all" style={{ textDecoration: 'none', color: 'inherit' }}>🛍️ SCANDISTORE</Link>
+            {/* ლოგოს ლინკი შესწორდა / -ზე */}
+            <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>🛍️ SCANDISTORE</Link>
           </div>
 
           <div className="header-actions">
