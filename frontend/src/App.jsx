@@ -1,6 +1,6 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useQuery, gql } from '@apollo/client';
-import { BrowserRouter as Router, Routes, Route, useNavigate, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Link, useLocation } from 'react-router-dom';
 import ProductDetails from './pages/ProductDetails';
 import CartOverlay from './components/CartOverlay';
 import { CartContext } from './context/CartContext';
@@ -101,10 +101,47 @@ function ProductList({ currentCategory }) {
   );
 }
 
+function Navigation({ currentCategory, setCurrentCategory }) {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === '/') {
+      setCurrentCategory('all');
+    }
+  }, [location, setCurrentCategory]);
+
+  return (
+    <nav className="nav-categories">
+      <Link 
+        to="/" 
+        className={currentCategory === 'all' ? 'active' : ''} 
+        data-testid={currentCategory === 'all' ? 'active-category-link' : 'category-link'} 
+        onClick={() => setCurrentCategory('all')}
+      >
+        ALL
+      </Link>
+      <Link 
+        to="/" 
+        className={currentCategory === 'tech' ? 'active' : ''} 
+        data-testid={currentCategory === 'tech' ? 'active-category-link' : 'category-link'} 
+        onClick={() => setCurrentCategory('tech')}
+      >
+        TECH
+      </Link>
+      <Link 
+        to="/" 
+        className={currentCategory === 'clothes' ? 'active' : ''} 
+        data-testid={currentCategory === 'clothes' ? 'active-category-link' : 'category-link'} 
+        onClick={() => setCurrentCategory('clothes')}
+      >
+        CLOTHES
+      </Link>
+    </nav>
+  );
+}
+
 function App() {
   const [currentCategory, setCurrentCategory] = useState('all');
-  
-  
   const { cartItems, isCartOpen, setIsCartOpen } = useContext(CartContext);
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -112,23 +149,24 @@ function App() {
     <Router>
       <div className="app-container">
         <header className="header">
-          <nav className="nav-categories">
-            <Link to="/" className={currentCategory === 'all' ? 'active' : ''} data-testid={currentCategory === 'all' ? 'active-category-link' : 'category-link'} onClick={() => setCurrentCategory('all')}>ALL</Link>
-            <Link to="/" className={currentCategory === 'tech' ? 'active' : ''} data-testid={currentCategory === 'tech' ? 'active-category-link' : 'category-link'} onClick={() => setCurrentCategory('tech')}>TECH</Link>
-            <Link to="/" className={currentCategory === 'clothes' ? 'active' : ''} data-testid={currentCategory === 'clothes' ? 'active-category-link' : 'category-link'} onClick={() => setCurrentCategory('clothes')}>CLOTHES</Link>
-          </nav>
+          <Navigation currentCategory={currentCategory} setCurrentCategory={setCurrentCategory} />
           
           <div className="logo">
             <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>🛍️ SCANDI STORE</Link>
           </div>
 
           <div className="header-actions">
-            <div className="cart-icon-wrapper" data-testid="cart-btn" onClick={() => setIsCartOpen(!isCartOpen)}>
+            <button 
+              className="cart-icon-wrapper" 
+              data-testid="cart-btn" 
+              onClick={() => setIsCartOpen(!isCartOpen)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px', position: 'relative' }}
+            >
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M14.1667 6.66667H15.8333L19.1667 19.1667H0.833332L4.16667 6.66667H5.83333V5C5.83333 2.69881 7.69881 0.833334 10 0.833334C12.3012 0.833334 14.1667 2.69881 14.1667 5V6.66667ZM7.5 6.66667V8.33333H9.16667V6.66667H10.8333V8.33333H12.5V6.66667H14.1667V5C14.1667 2.69881 12.3012 0.833334 10 0.833334C7.69881 0.833334 5.83333 2.69881 5.83333 5V6.66667H7.5Z" fill="#43464E"/>
               </svg>
               {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
-            </div>
+            </button>
           </div>
           
           {isCartOpen && <CartOverlay onClose={() => setIsCartOpen(false)} />}
@@ -138,7 +176,6 @@ function App() {
           <Route path="/" element={<ProductList currentCategory={currentCategory} />} />
           <Route path="/product/:id" element={<ProductDetails />} />
         </Routes>
-
       </div>
     </Router>
   );
