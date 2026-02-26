@@ -3,6 +3,7 @@ body {
   font-family: 'Raleway', sans-serif;
   background-color: #ffffff;
   color: #1d1f22;
+  overflow-x: hidden;
 }
 
 .app-container {
@@ -13,30 +14,49 @@ body {
 }
 
 .header {
+  background-color: white;
   height: 80px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 0;
-  border-bottom: 1px solid #e5e5e5;
   margin-bottom: 40px;
-  position: relative; 
+  position: sticky; 
+  top: 0;
   z-index: 100;
+}
+
+.header::before {
+  content: "";
+  position: absolute;
+  top: 0; 
+  left: -50vw; 
+  right: -50vw; 
+  bottom: 0;
+  background-color: white;
+  border-bottom: 1px solid #e5e5e5;
+  z-index: -1;
 }
 
 .nav-categories {
   display: flex;
   gap: 16px;
+  position: relative;
+  z-index: 101;
+  height: 100%;
 }
 
 .nav-categories a {
+  display: flex;
+  align-items: center;
   text-decoration: none;
   color: #1d1f22;
   text-transform: uppercase;
-  padding: 10px 15px;
+  padding: 0 15px;
   font-weight: 600;
   border-bottom: 2px solid transparent;
+  box-sizing: border-box;
   transition: all 0.3s ease;
+  height: 100%;
 }
 
 .nav-categories a.active,
@@ -51,13 +71,17 @@ body {
   letter-spacing: 1px;
   position: absolute; 
   left: 50%;
-  transform: translateX(-50%);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 101;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  position: relative;
+  z-index: 101;
 }
 
 .cart-icon-wrapper {
@@ -396,24 +420,24 @@ body {
 }
 
 .cart-overlay-backdrop {
-  position: fixed;
-  top: 80px; 
-  left: 0;
-  width: 100vw;
-  height: calc(100vh - 80px);
+  position: absolute;
+  top: 100%; 
+  left: -50vw;
+  width: 200vw;
+  height: 100vh;
   background-color: rgba(57, 55, 72, 0.22);
-  z-index: 99;
+  z-index: 97;
 }
 
 .cart-overlay {
   position: absolute;
-  top: 80px;
+  top: 100%; 
   right: 20px;
   width: 325px;
   max-height: 600px;
   background: white;
   padding: 32px 16px;
-  z-index: 100;
+  z-index: 101;
   display: flex;
   flex-direction: column;
   box-shadow: 0px 4px 11px rgba(29, 31, 34, 0.1);
@@ -599,29 +623,38 @@ body {
   .header {
     flex-wrap: wrap;
     height: auto;
-    padding: 20px 0;
+    padding: 15px 0;
   }
 
   .logo {
     position: relative;
-    left: 0;
+    top: auto;
+    left: auto;
     transform: none;
     order: 1;
     width: 100%;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
   }
 
   .nav-categories {
     order: 2;
-    width: 80%;
-    justify-content: flex-start;
+    width: 100%;
+    justify-content: center;
+    gap: 30px;
+    height: auto;
+  }
+
+  .nav-categories a {
+    height: auto;
+    padding: 10px 15px;
   }
 
   .header-actions {
     position: absolute;
-    top: 20px;
-    right: 10px;
+    top: 15px;
+    right: 15px;
+    order: 1;
   }
 
   .products-grid {
@@ -653,7 +686,7 @@ body {
   }
 
   .cart-overlay {
-    top: 130px;
+    top: 100%; 
     right: 50%;
     transform: translateX(50%);
     width: 90%;

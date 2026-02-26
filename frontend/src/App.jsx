@@ -160,7 +160,7 @@ function App() {
           <Navigation currentCategory={currentCategory} setCurrentCategory={setCurrentCategory} />
           
           <div className="logo">
-            <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setCurrentCategory('all')}>🛍️ SCANDI STORE</Link>
+            <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setCurrentCategory('all')}>🛍️ SCANDISTORE</Link>
           </div>
 
           <div className="header-actions">
