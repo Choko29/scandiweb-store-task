@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 import { CartContext } from '../context/CartContext';
 
-
 const toKebabCase = (str) => {
   return str.replace(/\s+/g, '-').toLowerCase();
 };
@@ -40,10 +39,10 @@ function CartOverlay({ onClose }) {
                           const isSelected = item.selectedAttributes && item.selectedAttributes[attr.name] === attrItem.id;
                           const isColor = attr.type === 'swatch';
                           
-                          
+                          // ზუსტად ის ფორმატი, რასაც ბოტი ითხოვს (Value-ს გარეშე toKebabCase-ში)
                           const testId = isSelected 
-                            ? `cart-item-attribute-${toKebabCase(attr.name)}-${toKebabCase(attrItem.id)}-selected`
-                            : `cart-item-attribute-${toKebabCase(attr.name)}-${toKebabCase(attrItem.id)}`;
+                            ? `cart-item-attribute-${toKebabCase(attr.name)}-${attrItem.value}-selected`
+                            : `cart-item-attribute-${toKebabCase(attr.name)}-${attrItem.value}`;
 
                           return (
                             <div 
@@ -85,7 +84,6 @@ function CartOverlay({ onClose }) {
           style={{ opacity: cartItems.length === 0 ? 0.5 : 1, cursor: cartItems.length === 0 ? 'not-allowed' : 'pointer' }}
           onClick={() => {
             if(cartItems.length > 0) {
-              
               setCartItems([]);
               onClose();
             }

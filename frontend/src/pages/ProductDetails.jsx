@@ -32,7 +32,6 @@ const GET_PRODUCT = gql`
   }
 `;
 
-
 const toKebabCase = (str) => {
   return str.replace(/\s+/g, '-').toLowerCase();
 };
@@ -123,6 +122,7 @@ function ProductDetails() {
                   return (
                     <button
                       key={item.id}
+                      data-testid={`product-attribute-${toKebabCase(attr.name)}-${item.value}`}
                       className={`attr-btn ${isColor ? 'color-swatch' : 'text-swatch'} ${isSelected ? 'selected' : ''}`}
                       style={isColor ? { backgroundColor: item.value } : {}}
                       onClick={() => handleAttributeSelect(attr.name, item.id)}
