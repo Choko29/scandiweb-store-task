@@ -32,7 +32,7 @@ const GET_PRODUCTS = gql`
   }
 `;
 
-// გამარტივებული Kebab Case ფუნქცია
+
 const toKebabCase = (str) => {
   return str.replace(/\s+/g, '-').toLowerCase();
 };
@@ -167,7 +167,7 @@ function App() {
           <Navigation />
           
           <div className="logo">
-            {/* ლოგოს ლინკი შესწორდა / -ზე */}
+            {}
             <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>🛍️ SCANDISTORE</Link>
           </div>
 
