@@ -1,18 +1,58 @@
 import { useContext } from 'react';
+import { useMutation, gql } from '@apollo/client';
 import { CartContext } from '../context/CartContext';
 
 const toKebabCase = (str) => {
   return str.replace(/\s+/g, '-').toLowerCase();
 };
 
+
+const CREATE_ORDER = gql`
+  mutation CreateOrder($items: String!) {
+    createOrder(items: $items)
+  }
+`;
+
 function CartOverlay({ onClose }) {
   const { cartItems, updateQuantity, setCartItems } = useContext(CartContext);
+  
+  
+  const [createOrder, { loading }] = useMutation(CREATE_ORDER);
 
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cartItems.reduce((sum, item) => sum + (item.product.prices[0].amount * item.quantity), 0);
   const currencySymbol = cartItems.length > 0 ? cartItems[0].product.prices[0].currency_symbol : '$';
   
   const itemsText = totalItems === 1 ? '1 Item' : `${totalItems} Items`;
+
+  
+  const handlePlaceOrder = async () => {
+    if (cartItems.length === 0) return;
+
+    
+    const formattedItems = cartItems.map(item => ({
+      product_id: item.product.id,
+      quantity: item.quantity,
+      selected_attributes: item.selectedAttributes || {}
+    }));
+
+    try {
+       
+      const response = await createOrder({
+        variables: {
+          items: JSON.stringify(formattedItems)
+        }
+      });
+
+      
+      if (response.data && response.data.createOrder) {
+        setCartItems([]); 
+        onClose();        
+      }
+    } catch (error) {
+      console.error("Error placing order:", error);
+    }
+  };
 
   return (
     <>
@@ -39,7 +79,6 @@ function CartOverlay({ onClose }) {
                           const isSelected = item.selectedAttributes && item.selectedAttributes[attr.name] === attrItem.id;
                           const isColor = attr.type === 'swatch';
                           
-                          // ზუსტად ის ფორმატი, რასაც ბოტი ითხოვს (Value-ს გარეშე toKebabCase-ში)
                           const testId = isSelected 
                             ? `cart-item-attribute-${toKebabCase(attr.name)}-${attrItem.value}-selected`
                             : `cart-item-attribute-${toKebabCase(attr.name)}-${attrItem.value}`;
@@ -80,16 +119,11 @@ function CartOverlay({ onClose }) {
 
         <button 
           className={`place-order-btn ${cartItems.length === 0 ? 'disabled' : ''}`}
-          disabled={cartItems.length === 0}
-          style={{ opacity: cartItems.length === 0 ? 0.5 : 1, cursor: cartItems.length === 0 ? 'not-allowed' : 'pointer' }}
-          onClick={() => {
-            if(cartItems.length > 0) {
-              setCartItems([]);
-              onClose();
-            }
-          }}
+          disabled={cartItems.length === 0 || loading}
+          style={{ opacity: cartItems.length === 0 || loading ? 0.5 : 1, cursor: cartItems.length === 0 || loading ? 'not-allowed' : 'pointer' }}
+          onClick={handlePlaceOrder}
         >
-          PLACE ORDER
+          {loading ? 'PLACING...' : 'PLACE ORDER'}
         </button>
       </div>
     </>
