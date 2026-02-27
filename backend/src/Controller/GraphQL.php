@@ -24,7 +24,7 @@ class GraphQL {
             
             $rawInput = file_get_contents('php://input');
             if ($rawInput === false) {
-                throw new RuntimeException('ვერ მოხერხდა მონაცემების წაკითხვა');
+                throw new RuntimeException('Failed to read the data');
             }
 
             $input = json_decode($rawInput, true);
