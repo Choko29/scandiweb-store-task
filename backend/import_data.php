@@ -21,7 +21,7 @@ try {
     throw new \PDOException($e->getMessage(), (int)$e->getCode());
 }
 
-// 1. ვქმნით ცხრილებს სათითაოდ (რომ ერორი არ ამოაგდოს)
+
 $pdo->exec("CREATE TABLE IF NOT EXISTS categories (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL UNIQUE)");
 $pdo->exec("CREATE TABLE IF NOT EXISTS products (id VARCHAR(255) PRIMARY KEY, name VARCHAR(255) NOT NULL, inStock BOOLEAN NOT NULL, description TEXT, category_name VARCHAR(255), brand VARCHAR(255), FOREIGN KEY (category_name) REFERENCES categories(name) ON DELETE CASCADE)");
 $pdo->exec("CREATE TABLE IF NOT EXISTS gallery (id INT AUTO_INCREMENT PRIMARY KEY, product_id VARCHAR(255), image_url TEXT NOT NULL, FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE)");
@@ -29,7 +29,11 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS prices (id INT AUTO_INCREMENT PRIMARY KEY
 $pdo->exec("CREATE TABLE IF NOT EXISTS attribute_sets (id INT AUTO_INCREMENT PRIMARY KEY, product_id VARCHAR(255), name VARCHAR(255) NOT NULL, type VARCHAR(50) NOT NULL, FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE)");
 $pdo->exec("CREATE TABLE IF NOT EXISTS attribute_items (id INT AUTO_INCREMENT PRIMARY KEY, attribute_set_id INT, display_value VARCHAR(255) NOT NULL, value VARCHAR(255) NOT NULL, item_id VARCHAR(255) NOT NULL, FOREIGN KEY (attribute_set_id) REFERENCES attribute_sets(id) ON DELETE CASCADE)");
 
-// 2. ვასუფთავებთ ძველ მონაცემებს აბსოლუტურად! (TRUNCATE შლის ყველაფერს)
+
+$pdo->exec("CREATE TABLE IF NOT EXISTS orders (id INT AUTO_INCREMENT PRIMARY KEY, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS order_items (id INT AUTO_INCREMENT PRIMARY KEY, order_id INT, product_id VARCHAR(255), quantity INT, selected_attributes JSON, FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE)");
+
+
 $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
 $pdo->exec("TRUNCATE TABLE attribute_items");
 $pdo->exec("TRUNCATE TABLE attribute_sets");
@@ -37,6 +41,8 @@ $pdo->exec("TRUNCATE TABLE prices");
 $pdo->exec("TRUNCATE TABLE gallery");
 $pdo->exec("TRUNCATE TABLE products");
 $pdo->exec("TRUNCATE TABLE categories");
+$pdo->exec("TRUNCATE TABLE order_items");
+$pdo->exec("TRUNCATE TABLE orders");
 $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
 echo "Clean tables successfully prepared!<br>\n";

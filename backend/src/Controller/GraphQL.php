@@ -5,6 +5,7 @@ namespace App\Controller;
 use GraphQL\GraphQL as GraphQLBase;
 use GraphQL\Type\Schema;
 use App\GraphQL\QueryType;
+use App\GraphQL\MutationType; 
 use RuntimeException;
 use Throwable;
 
@@ -13,8 +14,11 @@ class GraphQL {
         try {
             
             $queryType = new QueryType();
+            $mutationType = new MutationType(); 
+            
             $schema = new Schema([
-                'query' => $queryType
+                'query' => $queryType,
+                'mutation' => $mutationType 
             ]);
 
             
