@@ -96,7 +96,13 @@ function ProductDetails() {
           ))}
         </div>
         <div className="pdp-main-image-container">
-          <img src={product.gallery[currentImgIndex]} alt={product.name} className="pdp-main-image" />
+          <img
+            src={product.gallery[currentImgIndex]}
+            alt={product.name}
+            className={`pdp-main-image ${!product.inStock ? 'oos-main-image' : ''}`}
+            style={{ opacity: 1, visibility: 'visible' }}
+          />
+          {!product.inStock && <div className="oos-overlay-text">OUT OF STOCK</div>}
           {product.gallery.length > 1 && (
             <div className="pdp-image-arrows">
               <button onClick={handlePrevImage} className="arrow-btn">{'<'}</button>

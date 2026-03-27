@@ -1,20 +1,29 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState } from 'react';
 
 export const CartContext = createContext();
 
+const useLocalStorage = (key, initialValue) => {
+  const [storedValue, setStoredValue] = useState(() => {
+    const savedValue = localStorage.getItem(key);
+    return savedValue ? JSON.parse(savedValue) : initialValue;
+  });
+
+  const setValue = (value) => {
+    setStoredValue((prevValue) => {
+      const valueToStore = value instanceof Function ? value(prevValue) : value;
+      localStorage.setItem(key, JSON.stringify(valueToStore));
+      return valueToStore;
+    });
+  };
+
+  return [storedValue, setValue];
+};
+
 export const CartProvider = ({ children }) => {
   
-  const [cartItems, setCartItems] = useState(() => {
-    const savedCart = localStorage.getItem('scandiweb_cart');
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
+  const [cartItems, setCartItems] = useLocalStorage('scandiweb_cart', []);
   
   const [isCartOpen, setIsCartOpen] = useState(false); 
-
-  
-  useEffect(() => {
-    localStorage.setItem('scandiweb_cart', JSON.stringify(cartItems));
-  }, [cartItems]);
 
   const addToCart = (product, selectedAttributes) => {
     setCartItems((prevItems) => {

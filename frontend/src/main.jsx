@@ -7,7 +7,7 @@ import { CartProvider } from './context/CartContext.jsx'
 
 
 const client = new ApolloClient({
-  uri: 'https://scandiweb-store-task-production.up.railway.app/graphql', 
+  uri: 'http://localhost:8000/graphql', 
   cache: new InMemoryCache(), 
 })
 
