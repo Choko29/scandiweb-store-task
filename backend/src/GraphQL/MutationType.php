@@ -23,7 +23,7 @@ class MutationType extends ObjectType {
                             return false;
                         }
 
-                        // ბაზის ლოგიკა გადავიდა მოდელში!
+                        
                         return Order::create($items);
                     }
                 ]

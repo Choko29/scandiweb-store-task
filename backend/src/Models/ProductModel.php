@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Database;
 use App\Models\Product\ProductFactory;
+use App\Models\Attribute;
 
 class ProductModel {
     public static function getAll(): array {
@@ -50,18 +51,8 @@ class ProductModel {
         $priceStmt->execute([$row['id']]);
         $row['prices'] = $priceStmt->fetchAll();
 
-        $attrSetStmt = $pdo->prepare("SELECT id as db_id, name as id, name, type FROM attribute_sets WHERE product_id = ?");
-        $attrSetStmt->execute([$row['id']]);
-        $attributeSets = $attrSetStmt->fetchAll();
-
-        foreach ($attributeSets as &$attrSet) {
-            $attrItemStmt = $pdo->prepare("SELECT item_id as id, display_value as displayValue, value FROM attribute_items WHERE attribute_set_id = ?");
-            $attrItemStmt->execute([$attrSet['db_id']]);
-            $attrSet['items'] = $attrItemStmt->fetchAll();
-        }
-        unset($attrSet);
-
-        $row['attributes'] = $attributeSets;
+        
+        $row['attributes'] = Attribute::getByProductId($pdo, $row['id']);
 
         return $row;
     }

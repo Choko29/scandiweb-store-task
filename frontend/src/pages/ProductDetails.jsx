@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
 import parse from 'html-react-parser';
 import { CartContext } from '../context/CartContext';
+import ProductGallery from '../components/ProductGallery';
+import ProductAttributes from '../components/ProductAttributes';
 import '../App.css';
 
 const GET_PRODUCT = gql`
@@ -31,10 +33,6 @@ const GET_PRODUCT = gql`
     }
   }
 `;
-
-const toKebabCase = (str) => {
-  return str.replace(/\s+/g, '-').toLowerCase();
-};
 
 function ProductDetails() {
   const { id } = useParams();
@@ -82,65 +80,23 @@ function ProductDetails() {
 
   return (
     <div className="pdp-container">
-      
-      <div className="pdp-gallery-section" data-testid="product-gallery">
-        <div className="pdp-thumbnails">
-          {product.gallery.map((imgUrl, index) => (
-            <img 
-              key={index} 
-              src={imgUrl} 
-              alt={`Thumbnail ${index}`} 
-              className={currentImgIndex === index ? 'active-thumbnail' : ''}
-              onClick={() => setCurrentImgIndex(index)}
-            />
-          ))}
-        </div>
-        <div className="pdp-main-image-container">
-          <img
-            src={product.gallery[currentImgIndex]}
-            alt={product.name}
-            className={`pdp-main-image ${!product.inStock ? 'oos-main-image' : ''}`}
-            style={{ opacity: 1, visibility: 'visible' }}
-          />
-          {!product.inStock && <div className="oos-overlay-text">OUT OF STOCK</div>}
-          {product.gallery.length > 1 && (
-            <div className="pdp-image-arrows">
-              <button onClick={handlePrevImage} className="arrow-btn">{'<'}</button>
-              <button onClick={handleNextImage} className="arrow-btn">{'>'}</button>
-            </div>
-          )}
-        </div>
-      </div>
+      <ProductGallery
+        product={product}
+        currentImgIndex={currentImgIndex}
+        setCurrentImgIndex={setCurrentImgIndex}
+        handlePrevImage={handlePrevImage}
+        handleNextImage={handleNextImage}
+      />
 
       <div className="pdp-info-section">
         <h1 className="pdp-brand">{product.brand}</h1>
         <h2 className="pdp-name">{product.name}</h2>
 
-        <div className="pdp-attributes">
-          {product.attributes.map(attr => (
-            <div key={attr.id} className="attribute-block" data-testid={`product-attribute-${toKebabCase(attr.name)}`}>
-              <h3 className="attribute-name">{attr.name.toUpperCase()}:</h3>
-              <div className="attribute-items">
-                {attr.items.map(item => {
-                  const isSelected = selectedAttrs[attr.name] === item.id;
-                  const isColor = attr.type === 'swatch';
-                  
-                  return (
-                    <button
-                      key={item.id}
-                      data-testid={`product-attribute-${toKebabCase(attr.name)}-${item.value}`}
-                      className={`attr-btn ${isColor ? 'color-swatch' : 'text-swatch'} ${isSelected ? 'selected' : ''}`}
-                      style={isColor ? { backgroundColor: item.value } : {}}
-                      onClick={() => handleAttributeSelect(attr.name, item.id)}
-                    >
-                      {!isColor ? item.value : ''} 
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
+        <ProductAttributes
+          attributes={product.attributes}
+          selectedAttrs={selectedAttrs}
+          handleAttributeSelect={handleAttributeSelect}
+        />
 
         <div className="pdp-price-block">
           <h3 className="price-label">PRICE:</h3>

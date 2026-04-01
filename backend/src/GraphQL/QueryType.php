@@ -36,7 +36,7 @@ class QueryType extends ObjectType {
                         try {
                             return Category::getAll();
                         } catch (\Throwable $e) {
-                            // ეს ხაზი შეცდომას პირდაპირ შენს ტერმინალში დაბეჭდავს!
+                            
                             error_log("🚨 ნამდვილი ერორი: " . $e->getMessage());
                             throw $e;
                         }
